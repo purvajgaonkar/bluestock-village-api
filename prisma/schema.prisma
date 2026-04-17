@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model State {
+  id        Int        @id @default(autoincrement())
+  mddsCode  Int        @unique
+  name      String
+  districts District[]
+}
+
+model District {
+  id        Int           @id @default(autoincrement())
+  mddsCode  Int           @unique
+  name      String
+  stateId   Int
+  state     State         @relation(fields: [stateId], references: [id])
+  subDistricts SubDistrict[]
+}
+
+model SubDistrict {
+  id         Int       @id @default(autoincrement())
+  mddsCode   String    @unique
+  name       String
+  districtId Int
+  district   District  @relation(fields: [districtId], references: [id])
+  villages   Village[]
+}
+
+model Village {
+  id            Int         @id @default(autoincrement())
+  mddsCode      Int         @unique
+  name          String
+  subDistrictId Int
+  subDistrict   SubDistrict @relation(fields: [subDistrictId], references: [id])
+}

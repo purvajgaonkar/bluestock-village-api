@@ -1,0 +1,14 @@
+# Dependencies
+node_modules
+frontend/node_modules
+
+# Environment Variables
+.env
+
+# Build outputs
+dist
+frontend/dist
+
+# IDE files
+.vscode
+.DS_Store
