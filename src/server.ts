@@ -5,7 +5,11 @@ import prisma from './client';
 const app = express();
 
 // Standard Middlewares
-app.use(cors());
+app.use(cors({
+  origin: '*', // Allows your Vercel frontend to talk to this backend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 /**
