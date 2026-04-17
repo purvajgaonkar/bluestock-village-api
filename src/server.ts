@@ -17,7 +17,7 @@ app.use(express.json());
 
 // --- 2. ROUTES ---
 
-// Base Health Check
+// Health Check
 app.get('/api/v1/health', async (req, res) => {
   try {
     const count = await prisma.village.count();
@@ -27,7 +27,7 @@ app.get('/api/v1/health', async (req, res) => {
   }
 });
 
-// Search Route with Deep Joins (Requirement 6.4)
+// Search Route with Deep Joins
 app.get('/api/v1/search', async (req, res) => {
   const { q } = req.query;
   if (!q || typeof q !== 'string') return res.status(400).json({ error: 'Query required' });
@@ -64,17 +64,19 @@ app.get('/api/v1/search', async (req, res) => {
   }
 });
 
-// Analytics Route for Chart (Requirement 8.1)
+// Analytics Route for Chart
 app.get('/api/v1/analytics/state-distribution', async (req, res) => {
   try {
-    // We fetch States and include the nested count of villages
     const states = await prisma.state.findMany({
-      include: {
+      select: {
+        name: true,
         districts: {
-          include: {
+          select: {
             subDistricts: {
-              include: {
-                _count: { select: { villages: true } }
+              select: {
+                _count: {
+                  select: { villages: true }
+                }
               }
             }
           }
@@ -82,18 +84,13 @@ app.get('/api/v1/analytics/state-distribution', async (req, res) => {
       }
     });
 
-    // Flatten the relational data for the Recharts frontend
-    const formatted = states.map(s => {
-      let totalVillages = 0;
-      s.districts.forEach(d => {
-        d.subDistricts.forEach(sd => {
-          totalVillages += sd._count.villages;
-        });
-      });
-      return { name: s.name, count: totalVillages };
-    });
+    const formatted = states.map(s => ({
+      name: s.name,
+      count: s.districts.reduce((acc: number, d: any) => 
+        acc + d.subDistricts.reduce((sAcc: number, sd: any) => sAcc + sd._count.villages, 0)
+      , 0)
+    }));
 
-    // Sort by count descending and take top 10
     const topStates = formatted
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
@@ -101,7 +98,7 @@ app.get('/api/v1/analytics/state-distribution', async (req, res) => {
     res.json({ data: topStates });
   } catch (error) {
     console.error("Analytics Error:", error);
-    res.status(500).json({ error: 'Analytics failed' });
+    res.status(500).json({ error: 'Analytics calculation failed' });
   }
 });
 
@@ -114,6 +111,6 @@ app.get('/', (req, res) => {
 export default app;
 
 if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 3000;
+  const PORT = Number(process.env.PORT) || 3000;
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
