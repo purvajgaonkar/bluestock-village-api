@@ -5,11 +5,10 @@
   "description": "API for Indian Village data",
   "main": "dist/server.js",
  "scripts": {
+  "build": "prisma generate",
   "dev": "nodemon --exec node --import tsx src/server.ts",
-  "generate": "prisma generate",
-  "build": "prisma generate", 
   "start": "node dist/server.js"
-},
+}
   "keywords": [],
   "author": "Purvaj Gaonkar",
   "license": "ISC",
