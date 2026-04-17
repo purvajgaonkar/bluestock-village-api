@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "type": "module",
   "description": "API for Indian Village data",
-  "main": "dist/server.js",
- "scripts": {
-  "build": "prisma generate",
-  "dev": "nodemon --exec node --import tsx src/server.ts",
-  "start": "node dist/server.js"
-},
+  "main": "src/server.ts",
+  "scripts": {
+    "postinstall": "prisma generate",
+    "build": "prisma generate",
+    "dev": "nodemon --exec node --import tsx src/server.ts",
+    "start": "node dist/server.js"
+  },
+  "engines": {
+    "node": "20.x"
+  },
   "keywords": [],
   "author": "Purvaj Gaonkar",
   "license": "ISC",
