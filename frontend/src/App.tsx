@@ -6,6 +6,9 @@ import {
   Tooltip, ResponsiveContainer, Cell 
 } from 'recharts'
 
+// --- UPDATE THIS TO YOUR LIVE BACKEND URL ---
+const API_BASE = "https://bluestock-village-backend.vercel.app";
+
 function App() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<any[]>([])
@@ -17,18 +20,18 @@ function App() {
 
   // 1. Initial Data Fetch (Health & Analytics)
   useEffect(() => {
-    // Fetch General Stats
-    axios.get('http://localhost:3000/api/v1/health')
+    // Fetch General Stats from Production
+    axios.get(`${API_BASE}/api/v1/health`)
       .then(res => setHealth(res.data))
       .catch(err => console.error("Health Check Failed:", err))
 
-    // Fetch Analytics for Chart (Requirement 8.1)
-    axios.get('http://localhost:3000/api/v1/analytics/state-distribution')
+    // Fetch Analytics for Chart from Production
+    axios.get(`${API_BASE}/api/v1/analytics/state-distribution`)
       .then(res => setChartData(res.data.data))
       .catch(err => console.error("Analytics Failed:", err))
   }, [])
 
-  // 2. Debounced Search Logic (Requirement 6.4)
+  // 2. Debounced Search Logic
   useEffect(() => {
     if (query.length < 3) {
       setResults([])
@@ -37,7 +40,7 @@ function App() {
 
     const delayDebounceFn = setTimeout(() => {
       setLoading(true)
-      axios.get(`http://localhost:3000/api/v1/search?q=${query}`)
+      axios.get(`${API_BASE}/api/v1/search?q=${query}`)
         .then(res => setResults(res.data.data))
         .catch(err => console.error(err))
         .finally(() => setLoading(false))
@@ -63,7 +66,7 @@ function App() {
             <div className="bg-blue-500/10 p-2 rounded-lg"><Database className="text-blue-500" size={20} /></div>
             <div>
               <p className="text-[10px] text-slate-500 uppercase font-black">Total Villages</p>
-              <p className="text-xl font-mono text-white leading-none mt-1">{health?.total_villages?.toLocaleString() || '---'}</p>
+              <p className="text-xl font-mono text-white leading-none mt-1">{health?.villageCount?.toLocaleString() || '---'}</p>
             </div>
           </div>
           <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex items-center gap-4 shadow-xl">
@@ -76,7 +79,7 @@ function App() {
         </div>
       </div>
 
-      {/* --- ANALYTICS SECTION (Requirement 8.1) --- */}
+      {/* --- ANALYTICS SECTION --- */}
       <div className="max-w-6xl mx-auto mb-10 bg-slate-900/50 border border-slate-800 p-6 rounded-3xl shadow-2xl">
         <div className="flex items-center gap-2 mb-8">
             <BarChart3 className="text-blue-500" size={20} />
@@ -162,4 +165,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

@@ -3,10 +3,13 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "rootDir": "./",
+    "outDir": "./dist",
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist"
+    "strict": true,
+    "skipLibCheck": true,
+    "ignoreDeprecations": "5.0" 
   },
   "include": ["src/**/*"]
 }
