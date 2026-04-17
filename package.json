@@ -8,7 +8,7 @@
   "build": "prisma generate",
   "dev": "nodemon --exec node --import tsx src/server.ts",
   "start": "node dist/server.js"
-}
+},
   "keywords": [],
   "author": "Purvaj Gaonkar",
   "license": "ISC",
